@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.job4j.demo_rest.domain.Person;
 import ru.job4j.demo_rest.repository.PersonRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,9 +22,10 @@ public class PersonController {
     @GetMapping("/")
     public ResponseEntity<List<Person>> findAll() {
         List<Person> persons = (List<Person>) personRepository.findAll();
-        return persons.size() != 0 ?
-                new ResponseEntity<>(persons, HttpStatus.OK) :
-                new ResponseEntity<>(new ArrayList<>(), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(
+                persons,
+                persons.size() != 0 ? HttpStatus.OK : HttpStatus.NOT_FOUND
+        );
     }
 
     @GetMapping("/{id}")
