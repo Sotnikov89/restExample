@@ -2,6 +2,7 @@ package ru.job4j.demo_rest.domain;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -15,9 +16,13 @@ public class Employee {
     private int inn;
     private Timestamp hiringDate;
     @OneToMany
-    private List<Person> accounts;
+    private List<Person> accounts = new ArrayList<>();
 
     public Employee() {
+    }
+
+    public void addAccount(Person person) {
+        accounts.add(person);
     }
 
     public int getId() {
