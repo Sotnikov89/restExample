@@ -28,11 +28,7 @@ public class EmployeeController {
 
     @GetMapping("/")
     public ResponseEntity<List<Employee>> findAll() {
-        List<Employee> employees = (List<Employee>) employeeRepository.findAll();
-        return new ResponseEntity<>(
-                employees,
-                employees.size() != 0 ? HttpStatus.OK : HttpStatus.NOT_FOUND
-        );
+        return new ResponseEntity<>(employeeRepository.findAll(), HttpStatus.OK);
     }
 
     @PostMapping("/{id}/account/")
@@ -41,10 +37,12 @@ public class EmployeeController {
         if (employee.isPresent()) {
             Person newPerson = restTemplate.postForObject(API, person, Person.class);
             employee.get().addAccount(newPerson);
-            return new ResponseEntity<>(employeeRepository.save(employee.get()), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            employee = Optional.of(employeeRepository.save(employee.get()));
         }
+        return new ResponseEntity<>(
+                employee.orElse(null),
+                employee.isPresent() ? HttpStatus.OK : HttpStatus.NOT_FOUND
+        );
     }
 
     @PutMapping("/{id}/account/")
@@ -54,10 +52,8 @@ public class EmployeeController {
             restTemplate.put(API, person, Person.class);
             employee.get().getAccounts().removeIf(p -> p.getId()==person.getId());
             employee.get().addAccount(person);
-            return ResponseEntity.ok().build();
-        } else {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
+        return new ResponseEntity<>(employee.isPresent() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
     @DeleteMapping("/{empId}/account/{accId}")
@@ -67,9 +63,9 @@ public class EmployeeController {
             employee.get().getAccounts().removeIf(p -> p.getId()==accId);
             employeeRepository.save(employee.get());
             restTemplate.delete(API_ID, accId);
-            return ResponseEntity.ok().build();
-        } else {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
+        return new ResponseEntity<>(
+                employee.isPresent()? HttpStatus.OK : HttpStatus.NOT_FOUND
+        );
     }
 }

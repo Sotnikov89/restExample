@@ -21,7 +21,7 @@ public class PersonController {
 
     @GetMapping("/")
     public ResponseEntity<List<Person>> findAll() {
-        List<Person> persons = (List<Person>) personRepository.findAll();
+        List<Person> persons = personRepository.findAll();
         return new ResponseEntity<>(
                 persons,
                 persons.size() != 0 ? HttpStatus.OK : HttpStatus.NOT_FOUND
